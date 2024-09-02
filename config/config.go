@@ -15,7 +15,7 @@ const (
 
 	//数据库配置
 	DbType = "mysql"
-	DbHost = "192.168.31.24"
+	DbHost = "127.0.0.1"
 	DbPort = 3306
 	DbName = "k8s_dashboard"
 	DbUser = "root"

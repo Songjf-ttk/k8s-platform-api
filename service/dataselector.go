@@ -8,6 +8,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	nwv1 "k8s.io/api/networking/v1"
+	volcanov1alpha1 "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 )
 
 // dataselector 用于排序,过滤,分页的数据类型
@@ -101,6 +102,21 @@ func (d *dataSelector) Paginate() *dataSelector {
 	}
 	d.GenericDataList = d.GenericDataList[startIndex:endIndex]
 	return d
+}
+
+type vcjobCell volcanov1alpha1.Job
+
+
+// 实现 DataCell 接口的两个方法，用于 vcjob 资源
+
+// 获取创建时间
+func (v vcjobCell) GetCreation() time.Time {
+	return v.CreationTimestamp.Time
+}
+
+// 获取名称
+func (v vcjobCell) GetName() string {
+	return v.Name
 }
 
 // 定义podCell, 重写GetCreation和GetName 方法后,可以进行数据转换

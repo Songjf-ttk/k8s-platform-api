@@ -23,6 +23,15 @@ func (r *router) InitApiRouter(router *gin.Engine) {
 		GET("/api/k8s/pod/container", Pod.GetPodContainer).
 		GET("/api/k8s/pod/log", Pod.GetPodLog).
 		GET("/api/k8s/pod/numnp", Pod.GetPodNumPerNp).
+		// vcjob
+		GET("/api/k8s/vcjobs", Vcjob.GetVcjobs).
+		GET("/api/k8s/vcjob/detail", Vcjob.GetVcjobDetail).
+		POST("/api/k8s/vcjobs", Vcjob.DeleteVcjob).
+		DELETE("/api/k8s/vcjob/del", Vcjob.DeleteVcjob).
+		PUT("/api/k8s/vcjob/update", Vcjob.UpdateVcjob).
+		GET("/api/k8s/vcjob/taskname", Vcjob.GetVcjobTaskName).
+		//-GET("/api/k8s/vcjob/log", Pod.GetPodLog).
+		GET("/api/k8s/vcjob/numnp", Vcjob.GetVcjobNumPerNp).
 		//deployment操作
 		GET("/api/k8s/deployments", Deployment.GetDeployments).
 		GET("/api/k8s/deployment/detail", Deployment.GetDeploymentDetail).

@@ -100,7 +100,7 @@ func (vc *vcjob) DeleteVcjob(vcjobName string, namespace string) (err error) {
 }
 
 // 更新vcjob
-func (vc *vcjob) Updatevcjob(namespace, content string) (err error) {
+func (vc *vcjob) UpdateVcjob(namespace, content string) (err error) {
 	var vcjob = &volcanov1alpha1.Job{}
 	// 反序列化为Pod对象
 	err = json.Unmarshal([]byte(content), vcjob)
@@ -118,14 +118,14 @@ func (vc *vcjob) Updatevcjob(namespace, content string) (err error) {
 }
 
 // 获取vcjob中的任务
-func (vc *vcjob) GetVcJobTask(vcjobName string, namespace string) (tasks []volcanov1alpha1.TaskSpec, err error) {
+func (vc *vcjob) GetVcjobTaskName(vcjobName string, namespace string) (tasks []string, err error) {
 	vcjob, err := vc.GetVcjobDetail(vcjobName, namespace)
 
 	if err != nil {
 		return nil, err
 	}
 	for _, task := range vcjob.Spec.Tasks {
-		tasks = append(tasks, task)
+		tasks = append(tasks, task.Name)
 	}
 	return tasks, nil
 }
@@ -159,25 +159,25 @@ func (vc *vcjob) GetPodLog(containerName string, podName string, namespace strin
 }*/
 
 // 获取每个namespace中vcjob的数量
-func (vc *vcjob) GetVcJobNumPerNp() (podsNps []*PodsNp, err error) {
+func (vc *vcjob) GetVcjobNumPerNp() (vcjobsNps []*VcjobNp, err error) {
 	//获取namespace列表
 	namespaceList, err := K8s.ClientSet.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
 	for _, namespace := range namespaceList.Items {
-		//获取pod列表
+		//获取vcjob列表
 		vcjobList, err := K8s.volcanoClientSet.BatchV1alpha1().Jobs(namespace.Name).List(context.TODO(), metav1.ListOptions{})
 		if err != nil {
 			return nil, err
 		}
 		//组装数据
-		podsNp := &PodsNp{
+		vcjobsNp := &VcjobNp{
 			Namespace: namespace.Name,
-			PodNum:    len(vcjobList.Items),
+			VcjobNum:    len(vcjobList.Items),
 		}
 		//添加到podsNps数组中
-		podsNps = append(podsNps, podsNp)
+		vcjobsNps = append(vcjobsNps, vcjobsNp)
 	}
-	return podsNps, nil
+	return vcjobsNps, nil
 }

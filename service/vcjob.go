@@ -1,15 +1,11 @@
 package service
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
-	"io"
-	"k8s-plantform/config"
 
 	"github.com/wonderivan/logger"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	// volcanoClient "volcano.sh/apis/pkg/client/clientset/versioned"
 	volcanov1alpha1 "volcano.sh/apis/pkg/apis/batch/v1alpha1"
@@ -135,6 +131,7 @@ func (vc *vcjob) GetVcJobTask(vcjobName string, namespace string) (tasks []volca
 }
 
 // 获取Pod内容器日志
+/*
 func (vc *vcjob) GetPodLog(containerName string, podName string, namespace string) (log string, err error) {
 	//设置日志配置,容器名,获取内容的配置
 	lineLimit := int64(config.PodLogTailLine)
@@ -159,9 +156,9 @@ func (vc *vcjob) GetPodLog(containerName string, podName string, namespace strin
 		return "", errors.New("复制podLog失败," + err.Error())
 	}
 	return buf.String(), nil
-}
+}*/
 
-// 获取每个namespace中pod的数量
+// 获取每个namespace中vcjob的数量
 func (vc *vcjob) GetVcJobNumPerNp() (podsNps []*PodsNp, err error) {
 	//获取namespace列表
 	namespaceList, err := K8s.ClientSet.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
@@ -170,14 +167,14 @@ func (vc *vcjob) GetVcJobNumPerNp() (podsNps []*PodsNp, err error) {
 	}
 	for _, namespace := range namespaceList.Items {
 		//获取pod列表
-		podList, err := K8s.ClientSet.CoreV1().Pods(namespace.Name).List(context.TODO(), metav1.ListOptions{})
+		vcjobList, err := K8s.volcanoClientSet.BatchV1alpha1().Jobs(namespace.Name).List(context.TODO(), metav1.ListOptions{})
 		if err != nil {
 			return nil, err
 		}
 		//组装数据
 		podsNp := &PodsNp{
 			Namespace: namespace.Name,
-			PodNum:    len(podList.Items),
+			PodNum:    len(vcjobList.Items),
 		}
 		//添加到podsNps数组中
 		podsNps = append(podsNps, podsNp)

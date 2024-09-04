@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"k8s-plantform/config"
 	"k8s-plantform/controller"
-	"k8s-plantform/db"
+	// "k8s-plantform/db"
 	"k8s-plantform/middle"
 	"k8s-plantform/service"
 	"net/http"
@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	// 初始化数据库
-	db.Init()
+	// // 初始化数据库
+	// db.Init()
 	// 初始化k8s client
 	service.K8s.Init()
 	// 初始化gin
@@ -33,6 +33,6 @@ func main() {
 	// gin 程序启动
 	fmt.Println("http://192.168.31.1:9091/")
 	r.Run(config.ListenAddr)
-	// 关闭数据库
-	db.Close()
+	// // 关闭数据库
+	// db.Close()
 }

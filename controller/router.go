@@ -75,10 +75,10 @@ func (r *router) InitApiRouter(router *gin.Engine) {
 		DELETE("/api/k8s/secret/del", Secret.DeleteSecret).
 		PUT("/api/k8s/secret/update", Secret.UpdateSecret).
 		// workflows
-		GET("/api/k8s/workflows", Workflow.GetList).
-		GET("/api/k8s/workflow/detail", Workflow.GetById).
-		POST("/api/k8s/workflow/create", Workflow.Create).
-		DELETE("/api/k8s/workflow/del", Workflow.DelById).
+		// GET("/api/k8s/workflows", Workflow.GetList).
+		// GET("/api/k8s/workflow/detail", Workflow.GetById).
+		// POST("/api/k8s/workflow/create", Workflow.Create).
+		// DELETE("/api/k8s/workflow/del", Workflow.DelById).
 		// Configmaps
 		GET("/api/k8s/configmaps", ConfigMap.GetConfigMaps).
 		GET("/api/k8s/configmap/detail", ConfigMap.GetConfigMapDetail).

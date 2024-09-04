@@ -11,7 +11,7 @@ import (
 	"github.com/wonderivan/logger"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	volcanoClient "volcano.sh/apis/pkg/client/clientset/versioned"
+	// volcanoClient "volcano.sh/apis/pkg/client/clientset/versioned"
 	volcanov1alpha1 "volcano.sh/apis/pkg/apis/batch/v1alpha1"
 )
 
@@ -21,8 +21,8 @@ type vcjob struct{}
 
 // 定义列表的返回内容,Items是pod元素列表,Total是元素数量
 type VcjobsResp struct {
-	Total int          `json:"total"`
-	Items []corev1.Pod `json:"items"`
+	Total int          			`json:"total"`
+	Items []volcanov1alpha1.Job `json:"items"`
 }
 type VcjobNp struct {
 	Namespace string `json:"namespace"`
@@ -30,7 +30,7 @@ type VcjobNp struct {
 }
 
 // 获取vcjob列表,支持过滤,排序,分页
-func (p *pod) GetVcjobs(filterName, namespace string, limit, page int) (vcjobsResp *VcjobsResp, err error) {
+func (vc *vcjob) GetVcjobs(filterName, namespace string, limit, page int) (vcjobsResp *VcjobsResp, err error) {
 	//context.TODO()  用于声明一个空的context上下文,用于List方法内设置这个请求超时
 	//metav1.ListOptions{} 用于过滤List数据,如label,field等
 	vcjobList, err := K8s.volcanoClientSet.BatchV1alpha1().Jobs(namespace).List(context.TODO(), metav1.ListOptions{})
@@ -41,7 +41,7 @@ func (p *pod) GetVcjobs(filterName, namespace string, limit, page int) (vcjobsRe
 	}
 	// 实例化dataselector结构体,组装数据
 	selectableData := &dataSelector{
-		GenericDataList: p.toCells(vcjobList.Items),
+		GenericDataList: vc.toCells(vcjobList.Items),
 		DataSelect: &DataSelectQuery{
 			Filter: &FilterQuery{Name: filterName},
 			Paginate: &PaginateQuery{
@@ -57,7 +57,7 @@ func (p *pod) GetVcjobs(filterName, namespace string, limit, page int) (vcjobsRe
 	data := filtered.Sort().Paginate()
 	println("Pod total: ", total)
 	// 将DataCell类型转成Pod
-	pods := p.fromCells(data.GenericDataList)
+	pods := vc.fromCells(data.GenericDataList)
 	return &VcjobsResp{
 		Items: pods,
 		Total: total,
@@ -135,7 +135,7 @@ func (vc *vcjob) GetVcJobTask(vcjobName string, namespace string) (tasks []volca
 }
 
 // 获取Pod内容器日志
-func (p *pod) GetPodLog(containerName string, podName string, namespace string) (log string, err error) {
+func (vc *vcjob) GetPodLog(containerName string, podName string, namespace string) (log string, err error) {
 	//设置日志配置,容器名,获取内容的配置
 	lineLimit := int64(config.PodLogTailLine)
 	option := &corev1.PodLogOptions{
@@ -162,7 +162,7 @@ func (p *pod) GetPodLog(containerName string, podName string, namespace string) 
 }
 
 // 获取每个namespace中pod的数量
-func (p *pod) GetVcJobNumPerNp() (podsNps []*PodsNp, err error) {
+func (vc *vcjob) GetVcJobNumPerNp() (podsNps []*PodsNp, err error) {
 	//获取namespace列表
 	namespaceList, err := K8s.ClientSet.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {

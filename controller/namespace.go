@@ -56,7 +56,7 @@ func (n *namespace) GetNamespaceDetail(ctx *gin.Context) {
 		})
 		return
 	}
-
+	
 	data, err := service.Namespace.GetNamespaceDetail(params.NamespaceName)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -71,6 +71,36 @@ func (n *namespace) GetNamespaceDetail(ctx *gin.Context) {
 		"data": data,
 	})
 }
+
+// add namespace
+func (n *namespace) CreateNamespace(ctx *gin.Context) {
+	var (
+		namespaceCreate = new(service.NamespaceCreate)
+		err          error
+	)
+
+	if err = ctx.ShouldBindJSON(namespaceCreate); err != nil {
+		logger.Error("Bind请求参数失败, " + err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+
+	if err = service.Namespace.CreateNamespace(namespaceCreate); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "创建namespace成功",
+		"data": nil,
+	})
+}
+
 
 // 删除namespace
 func (n *namespace) DeleteNamespace(ctx *gin.Context) {

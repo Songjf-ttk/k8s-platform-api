@@ -109,6 +109,35 @@ func (vc *vcjob) DeleteVcjob(ctx *gin.Context) {
 	})
 }
 
+// 创建vcjob
+func (vc *vcjob) CreateVcjob(ctx *gin.Context) {
+	params := new(struct {
+		Namespace string `json:"namespace"`
+		Content   string `json:"content"`
+	})
+	//PUT请求，绑定参数方法改为ctx.ShouldBindJSON
+	if err := ctx.ShouldBindJSON(params); err != nil {
+		logger.Error("Bind请求参数失败, " + err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	err := service.Vcjob.CreateVcjob(params.Namespace, params.Content)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "更新Vcjob成功",
+		"data": nil,
+	})
+}
+
 // 更新vcjob
 func (vc *vcjob) UpdateVcjob(ctx *gin.Context) {
 	params := new(struct {
@@ -138,7 +167,7 @@ func (vc *vcjob) UpdateVcjob(ctx *gin.Context) {
 	})
 }
 
-// 获取vcjob容器
+// 获取vcjob任务名
 func (vc *vcjob) GetVcjobTaskName(ctx *gin.Context) {
 	params := new(struct {
 		VcjobName   string `form:"vcjob_name"`

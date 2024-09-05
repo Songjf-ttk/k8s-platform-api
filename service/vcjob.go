@@ -98,7 +98,26 @@ func (vc *vcjob) DeleteVcjob(vcjobName string, namespace string) (err error) {
 	}
 	return nil
 }
-
+// 创建vcjob
+func (vc *vcjob) CreateVcjob(namespace, content string) (err error) {
+	var vcjob = &volcanov1alpha1.Job{}
+	// 反序列化为Pod对象
+	err = json.Unmarshal([]byte(content), vcjob)
+	if err != nil {
+		logger.Error("反序列化失败," + err.Error())
+		return errors.New("反序列化失败," + err.Error())
+	}
+	if namespace == "" {
+		namespace = "default"
+	}
+	// 更新pod
+	_, err = K8s.volcanoClientSet.BatchV1alpha1().Jobs(namespace).Create(context.TODO(), vcjob, metav1.CreateOptions{})
+	if err != nil {
+		logger.Error("更新vcjob失败," + err.Error())
+		return errors.New("更新vcjob失败," + err.Error())
+	}
+	return nil
+}
 // 更新vcjob
 func (vc *vcjob) UpdateVcjob(namespace, content string) (err error) {
 	var vcjob = &volcanov1alpha1.Job{}

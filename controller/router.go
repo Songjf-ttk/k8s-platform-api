@@ -14,6 +14,15 @@ func (r *router) InitApiRouter(router *gin.Engine) {
 	router.
 		// login
 		POST("/api/login", Login.Auth).
+		// vcjobs
+		GET("/api/k8s/vcjobs", Vcjob.GetVcjobs).
+		GET("/api/k8s/vcjob/detail", Vcjob.GetVcjobDetail).
+		POST("/api/k8s/vcjobs", Vcjob.DeleteVcjob).
+		DELETE("/api/k8s/vcjob/del", Vcjob.DeleteVcjob).
+		PUT("/api/k8s/vcjob/update", Vcjob.UpdateVcjob).
+		GET("/api/k8s/vcjob/taskname", Vcjob.GetVcjobTaskName).
+		GET("/api/k8s/vcjob/numnp", Vcjob.GetVcjobNumPerNp).
+		
 		// Pods
 		GET("/api/k8s/pods", Pod.GetPods).
 		GET("/api/k8s/pod/detail", Pod.GetPodDetail).
@@ -58,6 +67,7 @@ func (r *router) InitApiRouter(router *gin.Engine) {
 		GET("/api/k8s/namespaces", Namespace.GetNamespaces).
 		GET("/api/k8s/namespace/detail", Namespace.GetNamespaceDetail).
 		DELETE("/api/k8s/namespace/del", Namespace.DeleteNamespace).
+		POST("/api/k8s/namespace/create", Namespace.CreateNamespace).
 		//pv操作
 		GET("/api/k8s/pvs", Pv.GetPvs).
 		GET("/api/k8s/pv/detail", Pv.GetPvDetail).

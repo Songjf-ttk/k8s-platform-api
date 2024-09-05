@@ -18,6 +18,11 @@ type NamespacesResp struct {
 	Total int                `json:"total"`
 }
 
+// 定义NamespaceCreate结构体，用于创建namespace需要的参数属性的定义
+type NamespaceCreate struct {
+	Name          string            `json:"name"`
+}
+
 // 获取namespace列表，支持过滤、排序、分页
 func (n *namespace) GetNamespaces(filterName string, limit, page int) (namespacesResp *NamespacesResp, err error) {
 	//获取namespaceList类型的namespace列表
@@ -72,6 +77,28 @@ func (n *namespace) DeleteNamespace(namespaceName string) (err error) {
 
 	return nil
 }
+
+//add namespace
+func (n *namespace) CreateNamespace(data *NamespaceCreate) (err error) {
+	// 定义要创建的Namespace对象
+	newNamespace := &corev1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: data.Name,
+		},
+	}
+
+	// logger.Info(newNamespace)
+
+	// 使用K8s客户端创建Namespace
+	_, err = K8s.ClientSet.CoreV1().Namespaces().Create(context.TODO(), newNamespace, metav1.CreateOptions{})
+	if err != nil {
+		logger.Error(errors.New("创建Namespace失败, " + err.Error()))
+		return errors.New("创建Namespace失败, " + err.Error())
+	}
+
+	return nil
+}
+
 
 func (n *namespace) toCells(std []corev1.Namespace) []DataCell {
 	cells := make([]DataCell, len(std))
